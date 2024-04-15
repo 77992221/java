@@ -65,10 +65,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         //3、返回实体对象
         return employee;
     }
-    /*
-     *新增员工
+
+    /**
+     * 新增员工
      * @param employeeDTO
-     * */
+     */
     @Override
     public void save(EmployeeDTO employeeDTO) {
         System.out.println("当前线程的id" +Thread.currentThread().getId());
@@ -90,11 +91,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     }
-    /*
-    * 分页查询
-    * @param employeePageQueryDTO
-    * @return
-    * */
+
+    /**
+     * 分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         //
@@ -105,11 +107,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         PageResult pageResult = new PageResult(total,record);
         return pageResult;
     }
-    /*
-           启用禁用员工账号
-           * @param status
-           * @param id
-           * */
+
+    /**
+     * 启用禁用员工账号
+     * @param status
+     * @param id
+     */
     @Override
     public void startOrStop(Integer status, long id) {
         //update employee set status = ?where id =?
@@ -120,6 +123,33 @@ public class EmployeeServiceImpl implements EmployeeService {
                 status(status).
                 id(id).build();
         employeeMapper.update(employee);
+    }
+
+    /**
+     * 根据id查询员工信息
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee getById(long id) {
+        Employee  employee = employeeMapper.getById(id);
+        employee.setPassword("****");
+        return employee;
+    }
+
+    /**
+     * 编辑员工信息
+     * @param employeeDTO
+     */
+
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employee,employeeDTO);
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employeeMapper.update(employee);
+
     }
 
 }
