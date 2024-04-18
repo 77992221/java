@@ -51,6 +51,14 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             log.info("当前员工id：", empId);
             BaseContext.setCurrentId(empId);
             //3、通过，放行
+            //1.获取请求url
+            String url = request.getRequestURL().toString();
+            //2.判断请求url中是否包含login 和 UserProfilePicture，如果包含，说明是登录操作，放行
+            if(url.contains("/UserProfilePicture") | url.contains("test")){
+
+                return true;//结束当前方法的执行
+            }
+
             return true;
         } catch (Exception ex) {
             //4、不通过，响应401状态码
