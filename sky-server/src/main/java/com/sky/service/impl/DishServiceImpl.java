@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class DishServiceImpl {
+public class DishServiceImpl implements DishService{
     @Autowired
     private DishMapper dishmapper;
     @Autowired
@@ -30,7 +30,8 @@ public class DishServiceImpl {
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if(flavors != null && flavors.size() > 0 )
         {
-            flavors.forEach(dishFlavor -> dishFlavor.setDishId(dishId));
+            flavors.forEach(dishFlavor -> {dishFlavor.setDishId(dishId);});
+            dishFlavorMapper.insertBatch(flavors);
         }
     }
 }
