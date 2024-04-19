@@ -61,7 +61,7 @@ public class AutoFillAspect {
             else if(operationType == OperationType.UPDATE)//为两个字段进行赋值
             {
                 Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
-                Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, LocalDateTime.class);
+                Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
                 setUpdateTime.invoke(entity,now);
                 setUpdateUser.invoke(entity,currentId);
             }
