@@ -1,5 +1,6 @@
-package com.sky.controller.admin.common;
+package com.sky.controller.admin;
 
+import io.swagger.annotations.Api;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
+@Api(tags = "图片回显接口")
 public class testReturn {
     /**
      * 返回图片
