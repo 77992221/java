@@ -109,6 +109,13 @@ public class DishServiceImpl implements DishService{
             dishFlavorMapper.insertBatch(flavors);
         }
     }
-
+   @Override
+    public List<Dish> selectDishById(Long categoryId) {
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return dishmapper.selectDishById(dish);
+    }
 
 }
