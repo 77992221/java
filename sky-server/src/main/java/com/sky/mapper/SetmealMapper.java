@@ -20,7 +20,7 @@ public interface SetmealMapper {
      */
     @Select("select count(id) from setmeal where category_id = #{categoryId}")
     Integer countByCategoryId(Long id);
-    @AutoFill(OperationType.INSERT)
+    @AutoFill(value = OperationType.INSERT)
     void insert(Setmeal setmeal);
 
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
@@ -28,4 +28,6 @@ public interface SetmealMapper {
     Setmeal getById(Long id);
 @Delete("delete from setmeal where id = #{setmealId}")
     void deleteSetmeal(Long setmealId);
+@AutoFill(value = OperationType.UPDATE)
+    void update(Setmeal setmeal);
 }
