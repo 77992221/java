@@ -25,4 +25,6 @@ public interface SetmealService {
      * @param setmealDTO
      */
     void update(SetmealDTO setmealDTO);
+
+    void StatusOrStop(Integer status, Long id);
 }
