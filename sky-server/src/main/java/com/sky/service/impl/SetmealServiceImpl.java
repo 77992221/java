@@ -16,6 +16,7 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,10 @@ public class SetmealServiceImpl implements SetmealService {
     @Autowired
     DishMapper dishMapper;
 
+    /**
+     * 新增套餐
+     * @param setmealDTO
+     */
     @Override
     @Transactional
     public void insertSetmeal(SetmealDTO setmealDTO) {
@@ -54,6 +59,11 @@ public class SetmealServiceImpl implements SetmealService {
         setmealDishMapper.insertBatch(setmealDishes);
     }
 
+    /**
+     * 套餐分页查询
+     * @param setmealPageQueryDTO
+     * @return
+     */
     @Override
     public PageResult PageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         int pageNum = setmealPageQueryDTO.getPage();
@@ -63,6 +73,11 @@ public class SetmealServiceImpl implements SetmealService {
         Page<SetmealVO> page = setmealMapper.pageQuery(setmealPageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
     }
+
+    /**
+     * 删除套餐
+     * @param ids
+     */
     @Transactional
     @Override
     public void deleteSetmeal(List<Long> ids) {
@@ -96,6 +111,10 @@ public class SetmealServiceImpl implements SetmealService {
         return setmealVO;
     }
 
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     */
     @Transactional
     public void update(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
@@ -115,8 +134,15 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDish.setSetmealId(setmealId);
         });
         //3、重新插入套餐和菜品的关联关系，操作setmeal_dish表，执行insert
+
         setmealDishMapper.insertBatch(setmealDishes);
     }
+
+    /**
+     * 起售停售套餐
+     * @param status
+     * @param id
+     */
 
     @Override
     public void StatusOrStop(Integer status, Long id) {
@@ -138,4 +164,22 @@ public class SetmealServiceImpl implements SetmealService {
                 .build();
         setmealMapper.update(setmeal);
     }
+    /**
+     * 条件查询
+     * @param setmeal
+     * @return
+     */
+    public List<Setmeal> list(Setmeal setmeal) {
+        List<Setmeal> list = setmealMapper.list(setmeal);
+        return list;
+    }
+    /**
+     * 根据id查询菜品选项
+     * @param id
+     * @return
+     */
+    public List<DishItemVO> getDishItemById(Long id) {
+        return setmealMapper.getDishItemBySetmealId(id);
+    }
 }
+
