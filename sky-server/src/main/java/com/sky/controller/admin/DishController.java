@@ -11,9 +11,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜品管理
@@ -25,6 +27,8 @@ import java.util.List;
 public class DishController {
     @Autowired
     private DishService dishService;
+    @Autowired
+    private RedisTemplate redisTemplate;
     @PostMapping
     @ApiOperation("新增菜品")
     public Result save(@RequestBody DishDTO dishDTO)
@@ -32,6 +36,8 @@ public class DishController {
 
         log.info("新增菜品：{}",dishDTO);
         dishService.saveWithFlavor(dishDTO);
+        String key = "dish_" + dishDTO.getCategoryId();
+        redisTemplate.delete(key);
         return Result.success();
     }
     @GetMapping("/page")
@@ -52,6 +58,9 @@ public class DishController {
     {
         log.info("菜品批量删除：{}",ids);
         dishService.deleteBatch(ids);
+        //将所有缓存数据删除
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
         return Result.success();
     }
     @GetMapping("/{id}")
@@ -68,6 +77,8 @@ public class DishController {
     {
         log.info("修改菜品：{}",dishDTO);
         dishService.updateWithFlavor(dishDTO);
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
         return Result.success();
     }
 
@@ -83,5 +94,14 @@ public class DishController {
 
         List<Dish> list =  dishService.selectDishById(categoryId);
         return Result.success(list);
+    }
+    @PostMapping("/status/{status}")
+    @ApiOperation("菜品起售停售")
+    public Result<String> startOrStop(@PathVariable Integer status,Long id)
+    {
+        dishService.startOrStop(status,id);
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
+        return Result.success();
     }
 }
