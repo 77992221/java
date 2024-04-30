@@ -85,4 +85,32 @@ private SetmealMapper setmealMapper;
         List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
         return list;
     }
+
+    @Override
+    public void delete(ShoppingCartDTO shoppingCartDTO) {
+        //判断当前加入购物车商品是否已存在
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO,shoppingCart);
+        Long userId = BaseContext.getCurrentId();
+        shoppingCart.setUserId(userId);
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+        //如果存在，数量-1
+        if(list != null && list.size() > 0 )
+        {
+            ShoppingCart cart = list.get(0);
+            Integer number = cart.getNumber();
+            if(number == 1) {
+                //当前商品在购物车中的份数为1，直接删除当前记录
+                shoppingCartMapper.deleteById(cart.getId());
+            }
+            else{ cart.setNumber(cart.getNumber() -1);
+                shoppingCartMapper.updateNumberBYId(cart);}
+        }
+    }
+
+    @Override
+    public void cleanShoppingCart() {
+        Long userId = BaseContext.getCurrentId();
+        shoppingCartMapper.deleteByUserId(userId);
+    }
 }
