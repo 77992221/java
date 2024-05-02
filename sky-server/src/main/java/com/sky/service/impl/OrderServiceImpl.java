@@ -1,6 +1,8 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersPageQueryDTO;
@@ -139,8 +141,27 @@ public class OrderServiceImpl implements OrderService {
     }
     @Override
     public PageResult pageQuery4User(int page, int pageSize, Integer status) {
+        PageHelper.startPage(page,pageSize);//设置分页查询
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
+        ordersPageQueryDTO.setStatus(status);
 
-        return null;
+        Page<Orders> page1 =orderMapper.select(ordersPageQueryDTO);//得到历史订单集合
+
+        List<OrderVO> list = new ArrayList<>();//设置一个集合变量存储订单明细表数据
+        if(page1 != null && page1.size() > 0 )
+        {
+            for(Orders orders: page1)
+            {
+                Long orderId = orders.getId();
+                OrderVO orderVO = new OrderVO();
+                List<OrderDetail> orderDetails = orderMapper.getByOrderId(orderId);
+                BeanUtils.copyProperties(orders, orderVO);
+                orderVO.setOrderDetailList(orderDetails);
+                list.add(orderVO);
+            }
+        }
+        return new PageResult(page1.getTotal(), list);
     }
 
 
