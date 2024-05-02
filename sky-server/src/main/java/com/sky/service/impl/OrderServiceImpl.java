@@ -14,16 +14,20 @@ import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderReportVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -175,5 +179,36 @@ public class OrderServiceImpl implements OrderService {
         BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(orderDetails);
         return orderVO;
+    }
+
+    /**
+     * 订单取消
+     * @param id
+     */
+    @Override
+    public void userCancelId(Long id) {
+        //判断订单是否存在
+        Orders orderDB = orderMapper.getById(id);
+        if (orderDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        //判断订单状态
+        if(orderDB.getStatus() > 2)
+        {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        //
+        Orders orders = new Orders();
+        orders.setId(orderDB.getId());
+
+        // 订单处于待接单状态下取消，需要进行退款
+        if (orderDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            //支付状态修改为 退款
+            orders.setPayStatus(Orders.REFUND);
+        }
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("用户取消");
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
     }
 }
