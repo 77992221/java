@@ -61,9 +61,17 @@ public class OrderController {
      * @return
      */
     @GetMapping("/historyOrders")
+    @ApiOperation("历史订单查询")
     public Result<PageResult> history(int page,int pageSize,Integer status)
-{
-    PageResult pageResult= orderService.pageQuery4User(page, pageSize, status);
-    return Result.success(pageResult);
-}
+    {
+        PageResult pageResult= orderService.pageQuery4User(page, pageSize, status);
+        return Result.success(pageResult);
+    }
+    @GetMapping("/orderDetail/{id}")
+    @ApiOperation("订单详情查询")
+    public Result<OrderVO> details(@PathVariable("id") Long id)
+    {
+        OrderVO orderVO = orderService.details(id);
+        return Result.success(orderVO);
+    }
 }
